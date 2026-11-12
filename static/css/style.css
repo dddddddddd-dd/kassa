@@ -1,0 +1,1130 @@
+/* ==========================================================================
+   АПТЕКА: ОНЛАЙН-ТЕТРАДЬ ПРОДАЖ
+   Цветовая палитра:
+   - Основной зелёный: #1F7A4D
+   - Тёмно-зелёный (hover/active): #17633e
+   - Фон приложения: #F3F8F4
+   - Карточки: #FFFFFF (скругление 16px)
+   - Kaspi: #E52D27 / фон #FEE2E2
+   - Наличные: #334155 / фон #F1F5F9
+   - Смешанная (Kaspi + Нал): #6D28D9 / фон #EDE9FE
+   ========================================================================== */
+
+:root {
+    --primary: #1F7A4D;
+    --primary-dark: #16633E;
+    --primary-light: #E8F5EE;
+    --primary-subtle: #D1EBE0;
+    --bg-page: #F3F8F4;
+    --bg-card: #FFFFFF;
+    --text-main: #1A202C;
+    --text-muted: #64748B;
+    --text-light: #94A3B8;
+    --border-color: #E2E8F0;
+    --border-subtle: #EDF2F7;
+    --radius-card: 16px;
+    --radius-btn: 12px;
+    --radius-pill: 9999px;
+    --shadow-card: 0 2px 8px rgba(31, 122, 77, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+    --shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+    --kaspi-red: #E52D27;
+    --kaspi-bg: #FEE2E2;
+    --cash-slate: #334155;
+    --cash-bg: #F1F5F9;
+    --split-purple: #6D28D9;
+    --split-bg: #EDE9FE;
+    --profit-green: #1F7A4D;
+    --danger: #DC2626;
+    --danger-bg: #FEE2E2;
+}
+
+/* Сброс и базовые настройки */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    font-size: 16px;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    min-height: 100vh;
+    background-color: var(--bg-page);
+    overflow-x: hidden;
+}
+
+.app-container {
+    max-width: 440px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 16px 16px 40px 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   1. ШАПКА (HEADER)
+   ========================================================================== */
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0 16px 0;
+    gap: 8px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1F7A4D 0%, #15623B 100%);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(31, 122, 77, 0.25);
+    flex-shrink: 0;
+}
+
+.header-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.header-title-centered {
+    text-align: center;
+    flex: 1;
+}
+
+.header-date {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-top: 2px;
+    text-transform: capitalize;
+}
+
+.btn-nav-report {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: #FFFFFF;
+    color: var(--primary);
+    border: 1.5px solid var(--primary-subtle);
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+    transition: all 0.2s ease;
+}
+
+.btn-nav-report:hover,
+.btn-nav-report:active {
+    background: var(--primary);
+    color: #FFFFFF;
+    border-color: var(--primary);
+}
+
+.btn-nav-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: #FFFFFF;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+    transition: all 0.2s ease;
+}
+
+.btn-nav-back:hover,
+.btn-nav-back:active {
+    background: #F8FAFC;
+    color: var(--primary);
+}
+
+.btn-logout {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #FFFFFF;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.btn-logout:hover,
+.btn-logout:active {
+    background: #F8FAFC;
+    color: var(--danger);
+    border-color: #FECACA;
+}
+
+/* ==========================================================================
+   2. ПЕРЕКЛЮЧАТЕЛЬ ПЕРИОДА
+   ========================================================================== */
+.period-switcher {
+    display: flex;
+    background: #E6EFE9;
+    padding: 4px;
+    border-radius: 14px;
+    gap: 4px;
+    margin-bottom: 14px;
+}
+
+.period-btn {
+    flex: 1;
+    min-height: 48px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.period-btn:hover {
+    color: var(--primary);
+}
+
+.period-btn.active {
+    background: var(--primary);
+    color: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(31, 122, 77, 0.25);
+}
+
+/* ==========================================================================
+   3. БОЛЬШАЯ ЗЕЛЁНАЯ КАРТОЧКА
+   ========================================================================== */
+.summary-card {
+    background: linear-gradient(135deg, #1F7A4D 0%, #17633E 100%);
+    color: #FFFFFF;
+    border-radius: var(--radius-card);
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 6px 18px rgba(31, 122, 77, 0.22);
+    position: relative;
+    overflow: hidden;
+}
+
+.summary-card::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 140px;
+    height: 140px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.summary-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.summary-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #C8E6D6;
+    letter-spacing: 0.01em;
+}
+
+.summary-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+}
+
+.summary-amount {
+    font-size: 2.125rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    font-variant-numeric: tabular-nums;
+}
+
+.report-summary-card .summary-amount {
+    margin-bottom: 4px;
+}
+
+.summary-subtext {
+    font-size: 0.8125rem;
+    color: #C8E6D6;
+    font-weight: 500;
+}
+
+.summary-subcards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.subcard {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 12px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.subcard-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.subcard-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #E2E8F0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.badge-kaspi-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #FF5A5F;
+    box-shadow: 0 0 6px #FF5A5F;
+}
+
+.badge-cash-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #68D391;
+    box-shadow: 0 0 6px #68D391;
+}
+
+.metric-dot-count {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #60A5FA;
+    box-shadow: 0 0 6px #60A5FA;
+}
+
+.metric-dot-avg {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #FBBF24;
+    box-shadow: 0 0 6px #FBBF24;
+}
+
+.subcard-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   4. КАРТОЧКА ФОРМЫ (НОВАЯ ПРОДАЖА)
+   ========================================================================== */
+.card {
+    background: var(--bg-card);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: 18px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.card-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+}
+
+.card-title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.card-subtitle {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group.mb-0 {
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.form-sublabel {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.form-label .required {
+    color: var(--danger);
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.form-input {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 38px 12px 16px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-btn);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-main);
+    background: #FFFFFF;
+    outline: none;
+    transition: all 0.2s ease;
+    font-variant-numeric: tabular-nums;
+}
+
+.form-input-large {
+    font-size: 1.375rem;
+    font-weight: 700;
+    min-height: 56px;
+}
+
+.form-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(31, 122, 77, 0.15);
+}
+
+.form-input::placeholder {
+    color: #CBD5E1;
+    font-weight: 400;
+}
+
+.input-suffix {
+    position: absolute;
+    right: 16px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* Переключатель способа оплаты (3 кнопки: Kaspi / Наличные / Kaspi + Нал) */
+.payment-toggle {
+    display: grid;
+    gap: 8px;
+}
+
+.payment-toggle-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.payment-option {
+    cursor: pointer;
+    user-select: none;
+}
+
+.payment-option input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.payment-btn {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius-btn);
+    background: #F8FAFC;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+    padding: 0 6px;
+    text-align: center;
+}
+
+.dot-kaspi,
+.dot-cash,
+.dot-split {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #CBD5E1;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+/* Kaspi активен */
+.payment-option input[value="kaspi"]:checked + .payment-btn {
+    border-color: #F87171;
+    background: var(--kaspi-bg);
+    color: #B91C1C;
+}
+.payment-option input[value="kaspi"]:checked + .payment-btn .dot-kaspi {
+    background: var(--kaspi-red);
+    box-shadow: 0 0 6px rgba(229, 45, 39, 0.6);
+}
+
+/* Наличные активны */
+.payment-option input[value="cash"]:checked + .payment-btn {
+    border-color: #94A3B8;
+    background: var(--cash-bg);
+    color: #1E293B;
+}
+.payment-option input[value="cash"]:checked + .payment-btn .dot-cash {
+    background: #1E293B;
+    box-shadow: 0 0 6px rgba(30, 41, 59, 0.4);
+}
+
+/* Смешанная оплата активна */
+.payment-option input[value="split"]:checked + .payment-btn {
+    border-color: #C4B5FD;
+    background: var(--split-bg);
+    color: #5B21B6;
+}
+.payment-option input[value="split"]:checked + .payment-btn .dot-split {
+    background: var(--split-purple);
+    box-shadow: 0 0 6px rgba(109, 40, 217, 0.5);
+}
+
+/* Блок разделения оплаты (Kaspi + Нал) */
+.split-payment-box {
+    background: #F8FAFC;
+    border: 1.5px dashed #CBD5E1;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 14px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.split-info {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.split-inputs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Большая зелёная кнопка «Записать» */
+.btn-primary {
+    width: 100%;
+    min-height: 52px;
+    background: var(--primary);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-btn);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(31, 122, 77, 0.25);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 6px;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 6px 16px rgba(31, 122, 77, 0.3);
+}
+
+.btn-primary:active {
+    transform: scale(0.985);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ==========================================================================
+   5. СПИСОК «ПОСЛЕДНИЕ ЗАПИСИ»
+   ========================================================================== */
+.sales-list-section {
+    flex: 1;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 0 4px;
+}
+
+.section-title {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.badge-count {
+    background: #E2E8F0;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+}
+
+.sales-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sale-item {
+    background: var(--bg-card);
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+    transition: background 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+}
+
+.sale-item.just-added {
+    animation: highlightRow 1.2s ease-out;
+}
+
+@keyframes highlightRow {
+    0% {
+        background-color: #D1F2D9;
+        transform: scale(1.02);
+    }
+    100% {
+        background-color: var(--bg-card);
+        transform: scale(1);
+    }
+}
+
+.sale-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.sale-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.sale-time {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.badge-pay {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+}
+
+.badge-kaspi {
+    background: var(--kaspi-bg);
+    color: #DC2626;
+}
+
+.badge-cash {
+    background: var(--cash-bg);
+    color: var(--cash-slate);
+}
+
+.badge-split {
+    background: var(--split-bg);
+    color: #6D28D9;
+}
+
+.sale-amounts {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.sale-price {
+    font-size: 1.1875rem;
+    font-weight: 800;
+    color: var(--text-main);
+    font-variant-numeric: tabular-nums;
+}
+
+.split-detail-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.sale-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
+
+.btn-icon {
+    width: 38px;
+    height: 38px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94A3B8;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+    background: #F1F5F9;
+    color: var(--text-main);
+}
+
+.btn-icon.btn-delete:hover {
+    background: #FEE2E2;
+    color: var(--danger);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 36px 16px;
+    background: #FFFFFF;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+}
+
+.empty-icon {
+    font-size: 2.25rem;
+    margin-bottom: 8px;
+}
+
+.empty-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.empty-subtitle {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    max-width: 260px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   СТРАНИЦА ОТЧЁТА (REPORT)
+   ========================================================================== */
+.date-picker-card {
+    padding: 12px 14px;
+    margin-bottom: 14px;
+}
+
+.date-picker-form {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.date-picker-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.date-picker-row {
+    display: flex;
+    gap: 8px;
+}
+
+.form-input-date {
+    min-height: 44px;
+    padding: 8px 12px;
+    font-size: 0.9375rem;
+}
+
+.btn-date-submit {
+    min-height: 44px;
+    padding: 0 16px;
+}
+
+.report-metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.metric-card {
+    background: #FFFFFF;
+    border-radius: 14px;
+    padding: 14px 12px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.metric-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.metric-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.metric-value {
+    font-size: 1.125rem;
+    font-weight: 800;
+    color: var(--text-main);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   МОДАЛЬНЫЕ ОКНА (РЕДАКТИРОВАНИЕ И УДАЛЕНИЕ)
+   ========================================================================== */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+}
+
+@media (min-width: 480px) {
+    .modal-backdrop {
+        align-items: center;
+        padding: 20px;
+    }
+}
+
+.modal-backdrop.is-open {
+    display: flex;
+    animation: fadeInBackdrop 0.2s ease-out;
+}
+
+@keyframes fadeInBackdrop {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-dialog {
+    background: #FFFFFF;
+    width: 100%;
+    max-width: 440px;
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+    box-shadow: var(--shadow-elevated);
+    animation: slideUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@media (min-width: 480px) {
+    .modal-dialog {
+        border-radius: 20px;
+    }
+}
+
+@keyframes slideUpModal {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.btn-modal-close {
+    border: none;
+    background: transparent;
+    font-size: 1.75rem;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+.modal-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-secondary {
+    min-height: 48px;
+    background: #F1F5F9;
+    color: #475569;
+    border: none;
+    border-radius: var(--radius-btn);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-secondary:hover {
+    background: #E2E8F0;
+}
+
+.btn-danger {
+    min-height: 48px;
+    background: var(--danger);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-btn);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(220, 38, 38, 0.25);
+    transition: background 0.2s ease;
+}
+
+.btn-danger:hover {
+    background: #B91C1C;
+}
+
+.modal-dialog-delete {
+    text-align: center;
+    padding: 24px 20px;
+}
+
+.delete-icon-box {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--danger-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px auto;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.modal-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.4;
+}
+
+/* ==========================================================================
+   СТРАНИЦА ВХОДА (LOGIN)
+   ========================================================================== */
+.login-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 56px);
+}
+
+.login-card {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 28px 22px;
+    width: 100%;
+    box-shadow: var(--shadow-elevated);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.login-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #1F7A4D 0%, #15623B 100%);
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px auto;
+    box-shadow: 0 6px 16px rgba(31, 122, 77, 0.25);
+}
+
+.login-title {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+}
+
+.login-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.alert-error {
+    background: #FEE2E2;
+    border: 1px solid #FCA5A5;
+    color: #B91C1C;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    line-height: 1.35;
+}
+
+.alert-error svg {
+    flex-shrink: 0;
+}
+
+.btn-login {
+    margin-top: 10px;
+}
+
+.login-footer {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.security-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-light);
+}

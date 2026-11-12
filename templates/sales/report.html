@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load sales_tags %}
+
+{% block title %}Отчёт — Тетрадь продаж{% endblock %}
+
+{% block content %}
+<!-- ШАПКА С НАВИГАЦИЕЙ -->
+<header class="app-header">
+    <div class="header-left">
+        <a href="{% url 'sales:index' %}" class="btn-nav-back" title="Вернуться в продажи">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Тетрадь</span>
+        </a>
+    </div>
+    <div class="header-title-centered">
+        <h1 class="header-title">Отчёт продаж</h1>
+        <p class="header-date">{{ today_russian }}</p>
+    </div>
+    <div class="header-right">
+        <a href="{% url 'logout' %}" class="btn-logout" title="Выйти" aria-label="Выйти">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+        </a>
+    </div>
+</header>
+
+<main class="main-content">
+    <!-- ПЕРЕКЛЮЧАТЕЛЬ ПЕРИОДОВ ОТЧЁТА -->
+    <section class="period-switcher period-switcher-report">
+        <a href="?period=today" class="period-btn {% if period == 'today' %}active{% endif %}">Сегодня</a>
+        <a href="?period=yesterday" class="period-btn {% if period == 'yesterday' %}active{% endif %}">Вчера</a>
+        <a href="?period=week" class="period-btn {% if period == 'week' %}active{% endif %}">Неделя</a>
+        <a href="?period=month" class="period-btn {% if period == 'month' %}active{% endif %}">Месяц</a>
+    </section>
+
+    <!-- ВЫБОР ПРОИЗВОЛЬНОЙ ДАТЫ -->
+    <div class="card date-picker-card">
+        <form method="GET" action="{% url 'sales:report' %}" class="date-picker-form">
+            <label for="reportDate" class="date-picker-label">Выбрать дату:</label>
+            <div class="date-picker-row">
+                <input type="date" name="date" id="reportDate" class="form-input form-input-date" value="{{ custom_date }}">
+                <button type="submit" class="btn-secondary btn-date-submit">Показать</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- КАРТОЧКА С ИТОГАМИ ОТЧЁТА -->
+    <section class="summary-card report-summary-card">
+        <div class="summary-top">
+            <span class="summary-label">{{ period_title }}</span>
+            <span class="summary-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </span>
+        </div>
+        <div class="summary-amount">
+            {{ stats.total_sales_formatted }}
+        </div>
+        <p class="summary-subtext">Общая сумма продаж</p>
+    </section>
+
+    <!-- МЕТРИКИ В СЕТКЕ 2x2 -->
+    <section class="report-metrics-grid">
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="badge-kaspi-dot"></span>
+                <span class="metric-title">Kaspi</span>
+            </div>
+            <div class="metric-value">{{ stats.kaspi_formatted }}</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="badge-cash-dot"></span>
+                <span class="metric-title">Наличные</span>
+            </div>
+            <div class="metric-value">{{ stats.cash_formatted }}</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-dot-count"></span>
+                <span class="metric-title">Продаж</span>
+            </div>
+            <div class="metric-value">{{ stats.count }} чеков</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-dot-avg"></span>
+                <span class="metric-title">Средний чек</span>
+            </div>
+            <div class="metric-value">{{ stats.avg_check_formatted }}</div>
+        </div>
+    </section>
+
+    <!-- ДЕТАЛИЗАЦИЯ ПРОДАЖ -->
+    <section class="sales-list-section">
+        <div class="section-header">
+            <h2 class="section-title">Все продажи за период</h2>
+            <span class="badge-count">{{ sales|length }}</span>
+        </div>
+
+        <div class="sales-list">
+            {% if sales %}
+                {% for sale in sales %}
+                <div class="sale-item">
+                    <div class="sale-main">
+                        <div class="sale-meta">
+                            <span class="sale-time">{{ sale.created_at|sale_time }}</span>
+                            {% if sale.payment_method == 'kaspi' %}
+                                <span class="badge-pay badge-kaspi">Kaspi</span>
+                            {% elif sale.payment_method == 'cash' %}
+                                <span class="badge-pay badge-cash">Наличные</span>
+                            {% else %}
+                                <span class="badge-pay badge-split">Kaspi + Нал</span>
+                            {% endif %}
+                        </div>
+                        <div class="sale-amounts">
+                            <span class="sale-price">{{ sale.sale_price|tenge }}</span>
+                            {% if sale.payment_method == 'split' %}
+                                <span class="split-detail-text">({{ sale.kaspi_amount|tenge }} Kaspi / {{ sale.cash_amount|tenge }} Нал)</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📊</div>
+                    <p class="empty-title">Нет продаж за этот период</p>
+                    <p class="empty-subtitle">Выберите другой период или дату выше</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}
+

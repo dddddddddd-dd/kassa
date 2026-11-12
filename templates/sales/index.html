@@ -1,0 +1,386 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load sales_tags %}
+
+{% block content %}
+<!-- 1. ШАПКА С НАВИГАЦИЕЙ (ТЕТРАДЬ / ОТЧЁТ) -->
+<header class="app-header">
+    <div class="header-left">
+        <div class="logo-mark">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v20M2 12h20"/>
+            </svg>
+        </div>
+        <div>
+            <h1 class="header-title">Тетрадь продаж</h1>
+            <p class="header-date" id="headerDate">{{ today_russian }}</p>
+        </div>
+    </div>
+    <div class="header-right">
+        <a href="{% url 'sales:report' %}" class="btn-nav-report" title="Открыть отчёт">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Отчёт</span>
+        </a>
+        <a href="{% url 'logout' %}" class="btn-logout" title="Выйти из системы" aria-label="Выйти">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+        </a>
+    </div>
+</header>
+
+<main class="main-content">
+    <!-- 2. ПЕРЕКЛЮЧАТЕЛЬ ПЕРИОДА -->
+    <section class="period-switcher" role="tablist" aria-label="Выбор периода">
+        <button type="button" class="period-btn active" data-period="today" role="tab" aria-selected="true">
+            Сегодня
+        </button>
+        <button type="button" class="period-btn" data-period="week" role="tab" aria-selected="false">
+            Неделя
+        </button>
+        <button type="button" class="period-btn" data-period="month" role="tab" aria-selected="false">
+            Месяц
+        </button>
+    </section>
+
+    <!-- 3. БОЛЬШАЯ ЗЕЛЁНАЯ КАРТОЧКА ПРОДАЖ -->
+    <section class="summary-card" id="summaryCard">
+        <div class="summary-top">
+            <span class="summary-label" id="summaryTitle">Продажи за сегодня</span>
+            <span class="summary-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </span>
+        </div>
+        <div class="summary-amount" id="summarySalesAmount">
+            {{ today_stats.total_sales_formatted }}
+        </div>
+
+        <!-- Две маленькие плашки: Kaspi и Наличные -->
+        <div class="summary-subcards">
+            <div class="subcard subcard-kaspi">
+                <div class="subcard-header">
+                    <span class="badge-kaspi-dot"></span>
+                    <span class="subcard-title">Kaspi</span>
+                </div>
+                <div class="subcard-value" id="summaryKaspiSum">
+                    {{ today_stats.kaspi_formatted }}
+                </div>
+            </div>
+
+            <div class="subcard subcard-cash">
+                <div class="subcard-header">
+                    <span class="badge-cash-dot"></span>
+                    <span class="subcard-title">Наличные</span>
+                </div>
+                <div class="subcard-value" id="summaryCashSum">
+                    {{ today_stats.cash_formatted }}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. ФОРМА ДОБАВЛЕНИЯ ПРОДАЖИ (ТОЛЬКО ЦЕНА ПРОДАЖИ И ОПЛАТА) -->
+    <section class="card form-card">
+        <div class="card-title-row">
+            <h2 class="card-title">Новая продажа</h2>
+            <span class="card-subtitle">Ввод за пару секунд</span>
+        </div>
+
+        <form id="addSaleForm" method="POST" action="{% url 'sales:index' %}" autocomplete="off">
+            {% csrf_token %}
+
+            <!-- Единственное поле: Цена продажи -->
+            <div class="form-group">
+                <label for="id_sale_price" class="form-label">Цена продажи <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <input type="number" 
+                           name="sale_price" 
+                           id="id_sale_price" 
+                           class="form-input form-input-large" 
+                           placeholder="0" 
+                           min="1" 
+                           step="1" 
+                           inputmode="numeric" 
+                           pattern="[0-9]*" 
+                           required 
+                           autofocus>
+                    <span class="input-suffix">₸</span>
+                </div>
+            </div>
+
+            <!-- Способ оплаты (Kaspi / Наличные / Kaspi + Нал) -->
+            <div class="form-group">
+                <label class="form-label">Способ оплаты</label>
+                <div class="payment-toggle payment-toggle-3" role="radiogroup">
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="kaspi" checked id="pay_kaspi">
+                        <span class="payment-btn payment-btn-kaspi">
+                            <span class="dot-kaspi"></span>
+                            Kaspi
+                        </span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="cash" id="pay_cash">
+                        <span class="payment-btn payment-btn-cash">
+                            <span class="dot-cash"></span>
+                            Наличные
+                        </span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment_method" value="split" id="pay_split">
+                        <span class="payment-btn payment-btn-split">
+                            <span class="dot-split"></span>
+                            Kaspi + Нал
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Блок раздельной оплаты (появляется при выборе Kaspi + Нал) -->
+            <div class="split-payment-box" id="splitPaymentBox" style="display: none;">
+                <p class="split-info">Разделите сумму между Kaspi и наличными:</p>
+                <div class="split-inputs-grid">
+                    <div class="form-group mb-0">
+                        <label for="id_kaspi_amount" class="form-sublabel">Сумма Kaspi</label>
+                        <div class="input-wrapper">
+                            <input type="number" 
+                                   name="kaspi_amount" 
+                                   id="id_kaspi_amount" 
+                                   class="form-input" 
+                                   placeholder="0" 
+                                   min="0" 
+                                   step="1" 
+                                   inputmode="numeric" 
+                                   pattern="[0-9]*">
+                            <span class="input-suffix">₸</span>
+                        </div>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label for="id_cash_amount" class="form-sublabel">Сумма Наличные</label>
+                        <div class="input-wrapper">
+                            <input type="number" 
+                                   name="cash_amount" 
+                                   id="id_cash_amount" 
+                                   class="form-input" 
+                                   placeholder="0" 
+                                   min="0" 
+                                   step="1" 
+                                   inputmode="numeric" 
+                                   pattern="[0-9]*">
+                            <span class="input-suffix">₸</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary" id="btnSubmitSale">
+                <span class="btn-text">Записать</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </button>
+        </form>
+    </section>
+
+    <!-- 5. СПИСОК «ПОСЛЕДНИЕ ЗАПИСИ» -->
+    <section class="sales-list-section">
+        <div class="section-header">
+            <h2 class="section-title">Последние записи</h2>
+            <span class="badge-count" id="salesCountBadge">{{ recent_sales|length }}</span>
+        </div>
+
+        <div id="salesList" class="sales-list">
+            {% if recent_sales %}
+                {% for sale in recent_sales %}
+                <div class="sale-item" id="saleRow-{{ sale.id }}" data-id="{{ sale.id }}">
+                    <div class="sale-main">
+                        <div class="sale-meta">
+                            <span class="sale-time">{{ sale.created_at|sale_time }}</span>
+                            {% if sale.payment_method == 'kaspi' %}
+                                <span class="badge-pay badge-kaspi">Kaspi</span>
+                            {% elif sale.payment_method == 'cash' %}
+                                <span class="badge-pay badge-cash">Наличные</span>
+                            {% else %}
+                                <span class="badge-pay badge-split" title="Kaspi: {{ sale.kaspi_amount|tenge }} | Нал: {{ sale.cash_amount|tenge }}">
+                                    Kaspi + Нал
+                                </span>
+                            {% endif %}
+                        </div>
+                        <div class="sale-amounts">
+                            <span class="sale-price">{{ sale.sale_price|tenge }}</span>
+                            {% if sale.payment_method == 'split' %}
+                                <span class="split-detail-text">({{ sale.kaspi_amount|tenge }} / {{ sale.cash_amount|tenge }})</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="sale-actions">
+                        <button type="button" 
+                                class="btn-icon btn-edit" 
+                                title="Исправить" 
+                                aria-label="Исправить"
+                                data-id="{{ sale.id }}"
+                                data-sale-price="{{ sale.sale_price }}"
+                                data-kaspi-amount="{{ sale.kaspi_amount }}"
+                                data-cash-amount="{{ sale.cash_amount }}"
+                                data-payment-method="{{ sale.payment_method }}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                        <button type="button" 
+                                class="btn-icon btn-delete" 
+                                title="Удалить" 
+                                aria-label="Удалить"
+                                data-id="{{ sale.id }}"
+                                data-amount="{{ sale.sale_price|tenge }}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state" id="emptyState">
+                    <div class="empty-icon">📝</div>
+                    <p class="empty-title">Записей пока нет</p>
+                    <p class="empty-subtitle">Введите цену первой продажи выше и нажмите «Записать»</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</main>
+
+<!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ЗАПИСИ -->
+<div class="modal-backdrop" id="editModal" aria-hidden="true">
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+        <div class="modal-header">
+            <h3 class="modal-title" id="editModalTitle">Исправить запись</h3>
+            <button type="button" class="btn-modal-close" id="btnCancelEdit" aria-label="Закрыть">&times;</button>
+        </div>
+        <form id="editSaleForm" autocomplete="off">
+            <input type="hidden" id="edit_sale_id" name="sale_id">
+
+            <div class="form-group">
+                <label for="edit_sale_price" class="form-label">Цена продажи <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <input type="number" 
+                           id="edit_sale_price" 
+                           name="sale_price" 
+                           class="form-input form-input-large" 
+                           min="1" 
+                           step="1" 
+                           inputmode="numeric" 
+                           required>
+                    <span class="input-suffix">₸</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Способ оплаты</label>
+                <div class="payment-toggle payment-toggle-3">
+                    <label class="payment-option">
+                        <input type="radio" name="edit_payment_method" value="kaspi" id="edit_pay_kaspi">
+                        <span class="payment-btn payment-btn-kaspi">
+                            <span class="dot-kaspi"></span>
+                            Kaspi
+                        </span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="edit_payment_method" value="cash" id="edit_pay_cash">
+                        <span class="payment-btn payment-btn-cash">
+                            <span class="dot-cash"></span>
+                            Наличные
+                        </span>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="edit_payment_method" value="split" id="edit_pay_split">
+                        <span class="payment-btn payment-btn-split">
+                            <span class="dot-split"></span>
+                            Kaspi + Нал
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="split-payment-box" id="editSplitPaymentBox" style="display: none;">
+                <p class="split-info">Разделение суммы:</p>
+                <div class="split-inputs-grid">
+                    <div class="form-group mb-0">
+                        <label for="edit_kaspi_amount" class="form-sublabel">Kaspi</label>
+                        <div class="input-wrapper">
+                            <input type="number" 
+                                   id="edit_kaspi_amount" 
+                                   name="kaspi_amount" 
+                                   class="form-input" 
+                                   min="0" 
+                                   inputmode="numeric">
+                            <span class="input-suffix">₸</span>
+                        </div>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label for="edit_cash_amount" class="form-sublabel">Наличные</label>
+                        <div class="input-wrapper">
+                            <input type="number" 
+                                   id="edit_cash_amount" 
+                                   name="cash_amount" 
+                                   class="form-input" 
+                                   min="0" 
+                                   inputmode="numeric">
+                            <span class="input-suffix">₸</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" id="btnCancelEditFooter">Отмена</button>
+                <button type="submit" class="btn-primary" id="btnSaveEdit">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ УДАЛЕНИЯ -->
+<div class="modal-backdrop" id="deleteModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-delete" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+        <div class="delete-icon-box">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+        </div>
+        <h3 class="modal-title text-center" id="deleteModalTitle">Удалить запись?</h3>
+        <p class="modal-subtitle text-center" id="deleteModalDesc">Вы уверены, что хотите удалить эту продажу?</p>
+
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" id="btnCancelDelete">Отмена</button>
+            <button type="button" class="btn-danger" id="btnConfirmDelete">Удалить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Статистика для быстрого переключения периодов -->
+<script id="allStatsData" type="application/json">
+{{ all_stats_json|safe }}
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/app.js' %}"></script>
+{% endblock %}
